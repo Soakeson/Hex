@@ -10,8 +10,8 @@ public class UnionFind {
 
     /**
      * Unions the smaller set to the larger set and updates the size of the set (Smart union).
-     * @param a Set a to be unioned.
-     * @param b Set b to be unioned.
+     * @param a member of root set to be unioned.
+     * @param b member of root set to be unioned.
      */
     public void union(int a, int b) {
         int aR = find(a); // Root of a
