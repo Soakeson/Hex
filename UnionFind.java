@@ -29,7 +29,7 @@ public class UnionFind {
     /**
      * Finds the root of a given value, k. Uses path compression to increase performance.
      * @param k The values whose root will be searched for.
-     * @return The values root value.
+     * @return The values root.
      */
     public int find(int k) {
         int root = k;
@@ -42,11 +42,11 @@ public class UnionFind {
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("[");
         for (int i=0; i<sets.length; i++) {
-            sb.append(i + ":" + sets[i] + " ");
+            if (i % 6 == 0) 
+                sb.append("\n");
+            sb.append(i + ":" + sets[i] + ", ");
         }
-        sb.append("]");
         return sb.toString();
     }
 }
