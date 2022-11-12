@@ -1,39 +1,37 @@
 import java.io.File;
 import java.util.Scanner;
 
-
 /**
- * HexGame takes a size and a filePath to create a game loop 
+ * HexGame takes a size and a filePath to intitalize the game state and play the game.
  */
 public class HexGame {
     private HexState gameState;
     private Scanner scanner;
+    private int moves = 0;
     
     public HexGame(int size, String filePath) {
         try {
-            gameState = new HexState(size);
+            this.gameState = new HexState(size);
             File f = new File(filePath);
-            scanner = new Scanner(f);
+            this.scanner = new Scanner(f);
         } catch (Exception e) {
             System.out.println(e);
         }
     }
 
     public void play() {
-        int i = 0;
-        while (scanner.hasNextInt() && gameState.hasWon == 0) {
-            i++;
-            gameState.update((i % 2 == 0) ? ('R') : ('B'), scanner.nextInt());
+        while (scanner.hasNextInt() && gameState.getWinner() == 0) {
+            moves++;
+            gameState.update((moves % 2 == 0) ? ('R') : ('B'), scanner.nextInt());
         }
+        if (gameState.getWinner() == -1)
+            System.out.printf("\n--------> BLUE WON after %d moves", moves);
+        if (gameState.getWinner() == 1)
+            System.out.printf("\n--------> RED WON after %d moves", moves);
+        if (gameState.getWinner() == 0)
+            System.out.printf("\n--------> NO WINNER after %d moves", moves);
 
-        if (gameState.hasWon == -1)
-            System.out.println("BLUE WON");
-        if (gameState.hasWon == 1)
-            System.out.println("RED WON");
-        if (gameState.hasWon == 0)
-            System.out.println("NO WINNER");
-
-        System.out.print(gameState);
+        System.out.println(gameState);
     }
 
 }

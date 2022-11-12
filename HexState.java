@@ -3,7 +3,7 @@
  * It contains methods to update the state of the game and format the current state to a String.
  */
 public class HexState {
-    public int hasWon = 0;
+    private int winner = 0;
     private UnionFind sets;
     private char[] board;
     private int size;
@@ -15,10 +15,10 @@ public class HexState {
 
     public HexState(int size) {
         this.size = size;
-        this.boardArea = size * size;
+        this.boardArea = (size * size) + 1;
         this.sets = new UnionFind(boardArea + 4);
         this.board = new char[boardArea + 4];
-        for (int i=0; i<board.length; i++) // Initialize board and fill it with empty spaces
+        for (int i=1; i<board.length; i++) // Initialize board and fill it with empty spaces
             board[i] = '0';
 
         this.right = boardArea; this.left = boardArea+1; this.top = boardArea+2; this.bottom = boardArea+3; // Calculate fence positions
@@ -38,10 +38,10 @@ public class HexState {
 
         findNeighbors(cell);
         if (sets.find(right) == sets.find(left)) {
-            hasWon = -1;
+            winner = -1;
         }
         if (sets.find(top) == sets.find(bottom)) {
-            hasWon = 1;
+            winner = 1;
         }
     }
 
@@ -54,42 +54,42 @@ public class HexState {
     private void findNeighbors(int cell) {
         // Calculate all possible neighbors
         int[] offset = {cell-size, cell-size+1, cell-1, cell+1, cell+size-1, cell+size};
-        if (cell == 0) { // Top Left Corner
+        if (cell == 1) { // Top Left Corner
             int[] neighbors = {offset[3], offset[5], left, top};
             findNeighbors(cell, neighbors);
             return;
         }
-        if (cell == size-1) { // Top Right Corner
+        if (cell == size) { // Top Right Corner
             int[] neighbors = {offset[2], offset[4], offset[5], right, top};
             findNeighbors(cell, neighbors);
             return;
         }
-        if (cell == boardArea - size) { // Bottom Left Corner
+        if (cell == boardArea - (size -1)) { // Bottom Left Corner
             int[] neighbors = {offset[0], offset[1], offset[3], left, bottom};
             findNeighbors(cell, neighbors);
             return;
         }
-        if (cell == boardArea-1) { // Bottom Right Corner
+        if (cell == boardArea) { // Bottom Right Corner
             int[] neighbors = {offset[0], offset[2], right, bottom};
             findNeighbors(cell, neighbors);
             return;
         }
-        if (cell < size) { // Top Edge
+        if (cell <= size) { // Top Edge
             int[] neighbors = {offset[2], offset[3], offset[4], offset[5], top};
             findNeighbors(cell, neighbors);
             return;
         }
-        if (cell % size == 0) { // Left Edge
+        if (cell % size == 1) { // Left Edge
             int[] neighbors = {offset[0], offset[1], offset[3], offset[5], left};
             findNeighbors(cell, neighbors);
             return; 
         }
-        if ((cell + 1) % size == 0) { // Right Edge
+        if (cell % size == 0) { // Right Edge
             int[] neighbors = {offset[0], offset[2], offset[4], offset[5], right};
             findNeighbors(cell, neighbors);
             return;
         }
-        if (cell > (size * size) - size) { // Bottom Edge
+        if (cell > (size * size) - (size - 1)) { // Bottom Edge
             int[] neighbors = {offset[0], offset[1], offset[2], offset[3], bottom};
             findNeighbors(cell, neighbors);
             return;
@@ -102,9 +102,9 @@ public class HexState {
      * @param neighbors list of neihboring cell values to check.
      */
     private void findNeighbors(int cell, int[] neighbors) {
-        for (int n: neighbors) {
-            if (board[cell] == board[n]) {
-                sets.union(cell, n);
+        for (int neighbor: neighbors) {
+            if (board[cell] == board[neighbor]) {
+                sets.union(cell, neighbor);
             }
         }
     }
@@ -112,12 +112,12 @@ public class HexState {
     public String toString(){
         StringBuilder sb = new StringBuilder();
 
-        for (int i=0; i<boardArea; i++) {
+        for (int i=1; i<boardArea; i++) {
             String color = ANSI_RESET;
             if (board[i] != '0') // If cell is non-empty decide the color depending on player
                 color = (board[i] == 'R') ? (ANSI_RED):(ANSI_BLUE);
 
-            if (i % size == 0) { // If the next row needs to start
+            if (i % size == 1) { // If the next row needs to start
                 sb.append("\n");
                 for(int j=i/size; j>0; j--) // Formats the spaces to make a rhombus shape
                     sb.append(" ");
@@ -126,5 +126,13 @@ public class HexState {
             sb.append(color + board[i] + " ");
         }
         return sb.toString();
+    }
+
+    public int getWinner() {
+        return winner;
+    }
+
+    public void debug() {
+        System.out.println(sets);
     }
 }
